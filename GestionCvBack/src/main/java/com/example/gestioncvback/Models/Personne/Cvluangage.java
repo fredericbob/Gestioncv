@@ -1,5 +1,6 @@
 package com.example.gestioncvback.Models.Personne;
 
+import com.example.gestioncvback.Models.Users.Utilisateur;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -12,12 +13,20 @@ public class Cvluangage {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "idcv",referencedColumnName = "id")
-    private Cv cv;
+    @JoinColumn(name = "idutilisateur",referencedColumnName = "id")
+    private Utilisateur utilisateur;
 
     @ManyToOne
     @JoinColumn(name = "idlanguage",referencedColumnName = "id")
     private Language language;
+
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
+    }
+
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
+    }
 
     @Basic
     @Column(name = "pourcentage")
@@ -31,13 +40,6 @@ public class Cvluangage {
         this.language = language;
     }
 
-    public Cv getCv() {
-        return cv;
-    }
-
-    public void setCv(Cv cv) {
-        this.cv = cv;
-    }
 
     public int getId() {
         return id;

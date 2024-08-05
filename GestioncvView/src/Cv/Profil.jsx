@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Spinner } from 'react-bootstrap'; 
+import { Spinner, Card } from 'react-bootstrap'; 
 import '../assets/css/style.css';
-
 
 function Profil() {
     const [profil, setProfil] = useState(null);
@@ -49,32 +48,30 @@ function Profil() {
     if (!profil) return <p className="text-center">Aucune donnée trouvée</p>;
 
     return (
-        <div className="container mt-5 profil-container">
+        <div className="container mt-5">
             <div className="row justify-content-center">
                 <div className="col-md-8">
-                    <div className="card">
-                        <div className="card-header">
-                            <h3 className="text-center" style={{
-
-                                marginTop:'5%',
-                               
-                            }}>Votre profil</h3>
-                        </div>
-                        <div className="card-body">
-                            <p><strong>Date de naissance:</strong> {profil.dateNaissance}</p>
-                            <p><strong>Adresse:</strong> {profil.adresse}</p>
-                            <p><strong>Téléphone:</strong> {profil.telephone}</p>
-                            <p><strong>Email:</strong> {profil.email}</p>
-                            <p><strong>Genre:</strong> {profil.genre}</p>
-                            <p><strong>Statut Matrimonial:</strong> {profil.statutMatrimonial}</p>
-                            <p><strong>CV Noms:</strong> {profil.cvNoms}</p>
-                            <p><strong>Domaines de Compétence:</strong> {profil.domainesCompetences}</p>
-                            <p><strong>Compétences:</strong> {profil.competences}</p>
-                            <p><strong>Expériences:</strong> {profil.experiences}</p>
-                            <p><strong>Diplômes Obtenus:</strong> {profil.diplomesObtenus}</p>
-                            <p><strong>Langues Plus Maîtrisées:</strong> {profil.languesPlusMaitrisees}</p>
-                        </div>
-                    </div>
+                    <Card>
+                        <Card.Header className="bg-primary text-white">
+                            <h3 className="text-center mb-0">Votre profil</h3>
+                        </Card.Header>
+                        <Card.Body>
+                            <ul className="list-unstyled">
+                                <li className="mb-2"><strong>Date de naissance:</strong> {profil.dateNaissance}</li>
+                                <li className="mb-2"><strong>Adresse:</strong> {profil.adresse}</li>
+                                <li className="mb-2"><strong>Téléphone:</strong> {profil.telephone}</li>
+                                <li className="mb-2"><strong>Email:</strong> {profil.email}</li>
+                                <li className="mb-2"><strong>Genre:</strong> {profil.genre}</li>
+                                <li className="mb-2"><strong>Statut Matrimonial:</strong> {profil.statutMatrimonial}</li>
+                                <li className="mb-2"><strong>CV Noms:</strong> {profil.cvNoms}</li>
+                                <li className="mb-2"><strong>Domaines de Compétence:</strong> {profil.domainesCompetences}</li>
+                                <li className="mb-2"><strong>Compétences:</strong> {profil.competences}</li>
+                                <li className="mb-2"><strong>Expériences:</strong> {profil.experiences}</li>
+                                <li className="mb-2"><strong>Diplômes Obtenus:</strong> {profil.diplomesObtenus}</li>
+                                <li className="mb-2"><strong>Langues Plus Maîtrisées:</strong> {profil.languesPlusMaitrisees}</li>
+                            </ul>
+                        </Card.Body>
+                    </Card>
                 </div>
             </div>
         </div>

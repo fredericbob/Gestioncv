@@ -2,6 +2,7 @@ package com.example.gestioncvback.Services.Cv;
 
 import com.example.gestioncvback.Models.Personne.*;
 
+import com.example.gestioncvback.Models.Users.Utilisateur;
 import com.example.gestioncvback.Repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ public class CvServices {
 
     private final CvRepository cvRepository;
     private final PersonneRepository personneRepository;
-
+    private final UtilisateurRepository utilisateurRepository;
     private final NiveaucompetenceRepository niveaucompetenceRepository;
 
     private final CompetenceRepository competenceRepository;
@@ -25,9 +26,10 @@ public class CvServices {
     private final DomaineRepository domaineRepository;
 
     @Autowired
-    public CvServices(CvRepository cvRepository, PersonneRepository personneRepository, NiveaucompetenceRepository niveaucompetenceRepository, CompetenceRepository competenceRepository,  DiplomeobtentionRepository diplomeobtentionRepository, DomaineRepository domaineRepository) {
+    public CvServices(CvRepository cvRepository, PersonneRepository personneRepository, UtilisateurRepository utilisateurRepository, NiveaucompetenceRepository niveaucompetenceRepository, CompetenceRepository competenceRepository, DiplomeobtentionRepository diplomeobtentionRepository, DomaineRepository domaineRepository) {
         this.cvRepository = cvRepository;
         this.personneRepository = personneRepository;
+        this.utilisateurRepository = utilisateurRepository;
         this.niveaucompetenceRepository = niveaucompetenceRepository;
         this.competenceRepository = competenceRepository;
 
@@ -64,10 +66,10 @@ public class CvServices {
         }
 
 
-        if (cv.getPersonne() != null) {
-            Personne personne = personneRepository.findById(cv.getPersonne().getId())
+        if (cv.getUtilisateur() != null) {
+            Utilisateur personne = utilisateurRepository.findById(cv.getUtilisateur().getId())
                     .orElseThrow(() -> new RuntimeException("Personne not found"));
-            existingCv.setPersonne(personne);
+            existingCv.setUtilisateur(personne);
         }
 
         // Si diplome n'est pas null, mettre à jour le diplome
@@ -78,75 +80,34 @@ public class CvServices {
         }
 
         // Si domaine n'est pas null, mettre à jour le domaine
-        if (cv.getDomaine() != null) {
-            Domaine domaine = domaineRepository.findById(cv.getDomaine().getId())
-                    .orElseThrow(() -> new RuntimeException("Domaine not found"));
-            existingCv.setDomaine(domaine);
-        }
+
         return this.cvRepository.save(existingCv);
     }
 
-    public Cv save(int id, Cv cv) {
-        cvRepository.findById(id);
-        return this.cvRepository.save(cv);
+    public Cv createCv(Cv cv) {
+        return cvRepository.save(cv);
     }
 
     public void delete(int id) {
         this.cvRepository.deleteById(id);
     }
 
-    @Transactional
-    public Cv addcv(Cv cv) {
-        try {
-
-            // Récupérer la personne par son ID
-            Personne personne = personneRepository.findById(cv.getPersonne().getId())
-                    .orElseThrow(() -> new RuntimeException("Personne not found"));
-
-            // Récupérer le diplome par son ID
-            Diplomeobtention diplome = diplomeobtentionRepository.findById(cv.getDiplomeobtention().getId())
-                    .orElseThrow(() -> new RuntimeException("Diplome not found"));
-
-            // Récupérer le domaine par son ID
-            Domaine domaine = domaineRepository.findById(cv.getDomaine().getId())
-                    .orElseThrow(() -> new RuntimeException("Domaine not found"));
-
-
-
-            // Créer une nouvelle instance de Cv avec les informations validées
-            Cv newCv = new Cv();
-            newCv.setNomcv(cv.getNomcv());
-            newCv.setTypecv(cv.getTypecv());
-            newCv.setAutresinformations(cv.getAutresinformations());
-            newCv.setArchive(false);
-            newCv.setDiplomeobtention(diplome);
-            newCv.setDomaine(domaine);
-            newCv.setPersonne(personne);
-
-
-            // Enregistrer le Cv en base de données
-            Cv savedCv = cvRepository.save(newCv);
-
-            //integration de competence
-            Competence competence= new Competence();
-            // Récupérer le niveau de competence par son ID
-            Niveaucompetence niveaucompetence = niveaucompetenceRepository.findById(competence.getNiveaucompetence().getId())
-                    .orElseThrow(() -> new RuntimeException("Domaine not found"));
-
-            competence.setPersonne(savedCv.getPersonne());
-            competence.setDomaine(savedCv.getDomaine());
-            competence.setNiveaucompetence(niveaucompetence);
-            //   competence.setDescription();
-
-            competenceRepository.save(competence);
-            // Retourner le Cv sauvegardé
-            return savedCv;
-        } catch (Exception e) {
-            // Capturer et relancer l'exception pour une gestion centralisée
-            throw new RuntimeException("Erreur lors de l'ajout du Cv : " + e.getMessage());
+    public Cv addCv(Cv cv) {
+        if (cv.getUtilisateur() == null || cv.getUtilisateur().getId() == 0) {
+            throw new IllegalArgumentException("Utilisateur is null or invalid");
         }
-    }
 
+        // Vérifier que l'utilisateur existe
+        Utilisateur utilisateur = utilisateurRepository.findById(cv.getUtilisateur().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur not found"));
+
+        cv.setUtilisateur(utilisateur);
+
+        // Définir archive sur false
+        cv.setArchive(false);
+
+        return cvRepository.save(cv);
+    }
     public Long getTotalCv() {
         return cvRepository.countTotalCv();
     }

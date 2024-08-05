@@ -14,7 +14,7 @@ public class Domaine {
     @Column(name = "nomdomaine")
     private String nomdomaine;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

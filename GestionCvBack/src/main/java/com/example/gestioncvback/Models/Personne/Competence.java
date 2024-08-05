@@ -1,5 +1,6 @@
 package com.example.gestioncvback.Models.Personne;
 
+import com.example.gestioncvback.Models.Users.Utilisateur;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -12,8 +13,8 @@ public class Competence {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "idpersonne",referencedColumnName = "id")
-    private Personne personne;
+    @JoinColumn(name = "idutilisateur",referencedColumnName = "id")
+    private Utilisateur utilisateur;
 
     @ManyToOne
     @JoinColumn(name = "iddomaine",referencedColumnName = "id")
@@ -38,17 +39,19 @@ public class Competence {
         return domaine;
     }
 
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
+    }
+
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
+    }
+
     public void setDomaine(Domaine domaine) {
         this.domaine = domaine;
     }
 
-    public Personne getPersonne() {
-        return personne;
-    }
 
-    public void setPersonne(Personne personne) {
-        this.personne = personne;
-    }
 
     public int getId() {
         return id;

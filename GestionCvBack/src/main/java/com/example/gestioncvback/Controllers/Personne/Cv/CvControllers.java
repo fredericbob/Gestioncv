@@ -1,7 +1,11 @@
 package com.example.gestioncvback.Controllers.Personne.Cv;
 
 import com.example.gestioncvback.Models.Personne.Cv;
+import com.example.gestioncvback.Models.Personne.Diplome;
+import com.example.gestioncvback.Models.Personne.Domaine;
 import com.example.gestioncvback.Services.Cv.CvServices;
+import com.example.gestioncvback.Services.Cv.DiplomeService;
+import com.example.gestioncvback.Services.Cv.DomaineService;
 import com.example.gestioncvback.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +22,14 @@ public class CvControllers {
 
     private final CvServices cvServices;
 
+    private final DomaineService domaineService;
+    private final DiplomeService diplomeService;
+
     @Autowired
-    public CvControllers(CvServices cvServices) {
+    public CvControllers(CvServices cvServices, DomaineService domaineService, DiplomeService diplomeService) {
         this.cvServices = cvServices;
+        this.domaineService = domaineService;
+        this.diplomeService = diplomeService;
     }
 
 
@@ -35,15 +44,16 @@ public class CvControllers {
         }
     }
 
-    @PostMapping("/addcv")
-    public ResponseEntity<Result> saveDetails(@RequestBody Cv cv) {
-        try{
-            Cv c= cvServices.addcv(cv);
-            return new ResponseEntity<>(new Result("CREATED", "", c), HttpStatus.CREATED);
-        }catch(Exception e){
-            return new ResponseEntity<>(new Result("An Error Occured", e.getMessage(), ""), HttpStatus.BAD_REQUEST);
+    @PostMapping("/add")
+    public ResponseEntity<Result> addCv(@RequestBody Cv cv) {
+        try {
+            Cv newCv = cvServices.addCv(cv);
+            return new ResponseEntity<>(new Result("CREATED", "", newCv), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Result("An Error Occurred", e.getMessage(), ""), HttpStatus.BAD_REQUEST);
         }
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Result> update(@PathVariable int id, @RequestBody Cv cv){
@@ -83,6 +93,27 @@ public class CvControllers {
         try {
             long count = cvServices.getTotalNouveauxCvAujourdHui();
             return new ResponseEntity<>(new Result("Ok", "", count), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Result("An Error Occured", e.getMessage(), ""), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @GetMapping("/domaine")
+    public ResponseEntity<Result> domaine() {
+        try {
+            List<Domaine> domaine = domaineService.findAll();
+            return new ResponseEntity<>(new Result("Ok", "", domaine), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Result("An Error Occured", e.getMessage(), ""), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/diplome")
+    public ResponseEntity<Result> diplome() {
+        try {
+            List<Diplome> diplomes = diplomeService.findAll();
+            return new ResponseEntity<>(new Result("Ok", "", diplomes), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new Result("An Error Occured", e.getMessage(), ""), HttpStatus.BAD_REQUEST);
         }

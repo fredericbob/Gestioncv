@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './Login/Login';
 import Sidebar from './components/Sidebar';
@@ -20,16 +21,16 @@ import ExportPDF from './Export/ExportPdf.jsx';
 import ProtectedRoute from './ProtectedRoute';
 import Deconnexion from './components/Deconnexion.jsx';
 import Client from './Personne/Client.jsx';
-
-
+import AjoutExperience from './Cv/AjoutExperience.jsx';
+import AjoutCompetence from './Cv/AjoutCompetence.jsx';
+import ModifierExperience from './Cv/Modifier/ModifierExperience .jsx';
+import AjoutPersonne from './Cv/AjoutPersonne.jsx';
 
 const Layout = ({ children }) => {
   const token = localStorage.getItem('token');
-
   const decodedToken = jwtDecode(token);
-  // Ajouter ce log pour voir le contenu du token
-
-    const userRole = decodedToken.role.toLowerCase();
+  const userRole = decodedToken.role.toLowerCase();
+  
   return (
     <>
       <Header />
@@ -37,6 +38,11 @@ const Layout = ({ children }) => {
       {children}
     </>
   );
+};
+
+// Ajouter la validation des props
+Layout.propTypes = {
+  children: PropTypes.node.isRequired
 };
 
 function App() {
@@ -74,8 +80,11 @@ function App() {
             <ProtectedRoute roleRequired="client" element={<Layout><Routes>
               <Route path="accueil" element={<Acceuil />} />
               <Route path="profil" element={<Profil />} />
+              <Route path="ajoutpersonne" element={<AjoutPersonne />} />
               <Route path="ajoutcv" element={<AjoutCv />} />
-              <Route path="modifiercv" element={<ModifierCv />} />
+              <Route path="competence" element={<AjoutCompetence />} />
+              <Route path="experience" element={<AjoutExperience />} />
+              <Route path="modifieexperience/:id" element={<ModifierExperience />} />
               <Route path="exportpdf" element={<ExportPDF />} />
               <Route path="/" element={<Navigate to="accueil" />} /> {/* Redirection vers la page d'accueil par défaut */}
             </Routes></Layout>} />

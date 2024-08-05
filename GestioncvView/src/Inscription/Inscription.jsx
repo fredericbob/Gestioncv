@@ -38,7 +38,7 @@ function Inscription() {
   
       if (response.ok) {
         // Succès de l'inscription
-        navigate('/client'); // Redirection vers la page souhaitée après l'inscription
+        navigate('/client/accueil'); // Redirection vers la page souhaitée après l'inscription
       } else {
         // Erreur lors de l'inscription
         throw new Error(responseData.message || 'Erreur lors de l\'inscription');

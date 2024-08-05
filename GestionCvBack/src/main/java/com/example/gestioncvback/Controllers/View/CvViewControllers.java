@@ -59,7 +59,7 @@ public class CvViewControllers {
 
     @PutMapping("/archive/{idcv}")
     public ResponseEntity<Result> archiveCv(@PathVariable("idcv") int idcv) {
-        System.out.println(" bob " + idcv);
+
         try {
             cvParPersonneService.archiverEtSupprimerCV(idcv);
             return new ResponseEntity<>(new Result("CV Archived successfully", "", ""), HttpStatus.OK);

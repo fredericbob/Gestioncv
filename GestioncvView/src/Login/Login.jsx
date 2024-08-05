@@ -50,8 +50,15 @@ function Login() {
     // Ajouter ce log pour voir le contenu du token
   
     const email = decodedToken.email.toLowerCase();
+   
+    const idutilisateur = decodedToken.id;
+
+
+
     localStorage.setItem('email', email);
-    console.log(email);
+
+    localStorage.setItem('idutilisateur', idutilisateur);
+  
       const userRole = decodedToken.role.toLowerCase(); // Convertir en minuscules
     
   

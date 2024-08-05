@@ -1,5 +1,6 @@
 package com.example.gestioncvback.Models.Personne;
 
+import com.example.gestioncvback.Models.Users.Utilisateur;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -14,8 +15,8 @@ public class CvArchive {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "idpersonne")
-    private Personne personne;
+    @JoinColumn(name = "idutilisateur")
+    private Utilisateur utilisateur;
 
 
     @Column(name = "nomcv")
@@ -56,14 +57,12 @@ public class CvArchive {
     }
 
 
-
-
-    public Personne getPersonne() {
-        return personne;
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
     }
 
-    public void setPersonne(Personne personne) {
-        this.personne = personne;
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
     }
 
     public int getId() {

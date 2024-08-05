@@ -82,7 +82,6 @@
         id SERIAL PRIMARY KEY,
         nom VARCHAR,
         note int
-
         );
         INSERT INTO niveaucompetence (nom, note) VALUES
         ('Débutant', 1),
@@ -94,17 +93,17 @@
 
         CREATE TABLE Competence (
         id SERIAL PRIMARY KEY,
-        idpersonne INT REFERENCES Personne(id) ON DELETE CASCADE,
+        idutilisateur INT REFERENCES Utilisateur(id) ON DELETE CASCADE,
         iddomaine INT REFERENCES Domaine(id),
         idniveau INT REFERENCES niveaucompetence(id),
         description TEXT
         );
 
-        CREATE INDEX idx_competence_idpersonne ON Competence(idpersonne);
+        CREATE INDEX idx_competence_idpersonne ON Competence(idutilisateur);
         CREATE INDEX idx_competence_iddomaine ON Competence(iddomaine);
 
 
-        INSERT INTO Competence (idpersonne, iddomaine, idniveau, description) VALUES
+        INSERT INTO Competence (idutilisateur, iddomaine, idniveau, description) VALUES
         (1, 1, 4, 'JavaScript'),
         (1, 1, 3, 'Python'),
         (2, 2, 2, 'Gestion de Projet'),
@@ -152,7 +151,7 @@
 
         CREATE TABLE Experience (
         id SERIAL PRIMARY KEY,
-        idpersonne INT REFERENCES Personne(id) ON DELETE CASCADE,
+        idutilisateur INT REFERENCES Utilisateur(id) ON DELETE CASCADE,
         poste VARCHAR(100) NOT NULL,
         entreprise VARCHAR(100),
         debut DATE,
@@ -160,9 +159,9 @@
         description TEXT
         );
 
-        CREATE INDEX idx_experience_idpersonne ON Experience(idpersonne);
+        CREATE INDEX idx_experience_idpersonne ON Experience(idutilisateur);
 
-        INSERT INTO Experience (idpersonne, poste, entreprise, debut, fin, description) VALUES
+        INSERT INTO Experience (idutilisateur, poste, entreprise, debut, fin, description) VALUES
         (1, 'Développeur Full-stack', 'Startup Innovate', '2010-08-01', '2015-12-31', 'Développement de plateformes web innovantes'),
         (2, 'Recruteur Senior', 'Agence RH Plus', '2012-05-15', '2020-03-20', 'Recrutement pour divers secteurs d activité'),
         (3, 'Chef de Projet IT', 'Grande Entreprise SA', '2015-03-10', '2023-01-05', 'Gestion de projets informatiques complexes');
@@ -170,35 +169,34 @@
 
         CREATE TABLE CV (
         id SERIAL PRIMARY KEY,
-        idpersonne INT REFERENCES Personne(id) ON DELETE CASCADE,
+        idutilisateur INT REFERENCES Utilisateur(id) ON DELETE CASCADE,
         nomcv VARCHAR(100) NOT NULL,
         typecv VARCHAR(50),
         iddiplome INT REFERENCES DiplomeObtention(id) not null ,
-        iddomaine INT REFERENCES    Domaine(id) not null ,
         autresinformations TEXT,
-        archive BOOLEAN DEFAULT false
+        archive BOOLEAN DEFAULT false,
+        date_reception Date
         );
 
 
 
-        CREATE INDEX idx_cv_idpersonne ON CV(idpersonne);
+        CREATE INDEX idx_cv_idpersonne ON CV(idutilisateur);
         CREATE INDEX idx_cv_iddiplome ON CV(iddiplome);
-        CREATE INDEX idx_cv_iddomaine ON CV(iddomaine);
+
         CREATE INDEX idx_cv_archive ON CV(archive);
 
 
-        INSERT INTO CV (idpersonne, nomcv, typecv, iddiplome, iddomaine, autresinformations) VALUES
-        (1, 'CV Jean Dupont', 'Développeur Web', 1, 1, 'Expérience dans la création de sites web responsives'),
-        (2, 'CV Marie Martin', 'Recruteur', 1, 2, 'Spécialisée dans le recrutement technique et stratégique'),
-        (3, 'CV Pierre Durand', 'Chef de Projet IT', 3, 2, 'Expertise en gestion de projets Agile');
+        INSERT INTO CV (idutilisateur, nomcv, typecv, iddiplome, autresinformations) VALUES
+        (1, 'CV Jean Dupont', 'Développeur Web', 1, 'Expérience dans la création de sites web responsives'),
+        (2, 'CV Marie Martin', 'Recruteur', 1,  'Spécialisée dans le recrutement technique et stratégique'),
+        (3, 'CV Pierre Durand', 'Chef de Projet IT', 3,  'Expertise en gestion de projets Agile');
 
         CREATE TABLE cv_archive (
         id Serial PRIMARY KEY,
-        idpersonne INT references Personne(id) on delete cascade ,
+        idutiliasteur INT references Utilisateur(id) on delete cascade ,
         nomcv VARCHAR(255) NOT NULL,
         typecv VARCHAR(255) NOT NULL,
         iddiplome INT references DiplomeObtention(id)  ,
-        iddomaine INT references Domaine(id) ,
         autresinformations TEXT,
         date_archivage TIMESTAMP
         );
@@ -207,15 +205,15 @@
 
         CREATE TABLE CVluangage (
         id SERIAL PRIMARY KEY,
-        idcv INT REFERENCES cv(id)  ON DELETE CASCADE,
+        idutilisateur INT REFERENCES Utilisateur(id)  ON DELETE CASCADE,
         idlanguage INT REFERENCES language(id),
         pourcentage double precision  not null
         );
 
-        CREATE INDEX idx_cvluangage_idcv ON CVluangage(idcv);
+        CREATE INDEX idx_cvluangage_idcv ON CVluangage(idutilisateur);
 
 
-        INSERT INTO CVluangage (idcv, idlanguage, pourcentage) VALUES
+        INSERT INTO CVluangage (idutilisateur, idlanguage, pourcentage) VALUES
         (1, 1, 90.5),
         (1, 2, 80),
         (2, 3, 95),
@@ -248,8 +246,8 @@ as
 $$
         BEGIN
 
-        INSERT INTO CV_Archive (idpersonne, nomcv, typecv, iddiplome, iddomaine, autresinformations)
-        SELECT idpersonne, nomcv, typecv, iddiplome, iddomaine, autresinformations
+        INSERT INTO CV_Archive (idutilisateur, nomcv, typecv, iddiplome, autresinformations)
+        SELECT idutilisateur, nomcv, typecv, iddiplome,  autresinformations
         FROM CV
         WHERE id = cv_id;
 
@@ -277,17 +275,17 @@ $$;
             COALESCE((SELECT string_agg(DISTINCT l.nom, ', ')
                       FROM CVluangage cvl
                                JOIN language l ON cvl.idlanguage = l.id
-                      WHERE cvl.idcv = c.id), '-') AS langues_plus_maitrisees,
+                      WHERE cvl.idutilisateur = c.idutilisateur), '-') AS langues_plus_maitrisees,
             COALESCE(string_agg(DISTINCT CONCAT(di.nom, ' (', dpl.dateobtention, ')'), ', '), '-') AS diplomes_obtenus,
             COALESCE(MAX(e.poste), '-') AS dernier_poste
         FROM
             Personne p
                 LEFT JOIN Utilisateur u ON u.id = p.idutilisateur
-                LEFT JOIN CV c ON p.id = c.idpersonne
-                LEFT JOIN Competence comp ON p.id = comp.idpersonne
+                LEFT JOIN CV c ON p.id = c.idutilisateur
+                LEFT JOIN Competence comp ON p.id = comp.idutilisateur
                 LEFT JOIN Domaine d ON comp.iddomaine = d.id
                 LEFT JOIN niveaucompetence nc ON comp.idniveau = nc.id
-                LEFT JOIN Experience e ON p.id = e.idpersonne
+                LEFT JOIN Experience e ON p.id = e.idutilisateur
                 LEFT JOIN DiplomeObtention dpl ON c.iddiplome = dpl.id
                 LEFT JOIN Diplome di ON dpl.iddiplome = di.id
         GROUP BY
@@ -312,16 +310,16 @@ $$;
             COALESCE((SELECT string_agg(DISTINCT l.nom, ', ')
                       FROM CVluangage cvl
                                JOIN language l ON cvl.idlanguage = l.id
-                      WHERE cvl.idcv = c.id), '-') AS langues_plus_maitrisees,
+                      WHERE cvl.idutilisateur = c.idutilisateur), '-') AS langues_plus_maitrisees,
             COALESCE(string_agg(DISTINCT CONCAT(di.nom, ' (', dpl.dateobtention, ')'), ', '), '-') AS diplomes_obtenus
         FROM
             Personne p
                 LEFT JOIN Utilisateur u ON u.id = p.idutilisateur
-                LEFT JOIN CV c ON p.id = c.idpersonne
-                LEFT JOIN Competence comp ON p.id = comp.idpersonne
+                LEFT JOIN CV c ON p.id = c.idutilisateur
+                LEFT JOIN Competence comp ON p.id = comp.idutilisateur
                 LEFT JOIN Domaine d ON comp.iddomaine = d.id
                 LEFT JOIN niveaucompetence nc ON comp.idniveau = nc.id
-                LEFT JOIN Experience e ON p.id = e.idpersonne
+                LEFT JOIN Experience e ON p.id = e.idutilisateur
                 LEFT JOIN DiplomeObtention dpl ON c.iddiplome = dpl.id
                 LEFT JOIN Diplome di ON dpl.iddiplome = di.id
         GROUP BY
@@ -332,11 +330,7 @@ $$;
 
 
 
-        ---recherche par competence
-        SELECT *
-        FROM CV_Complet
-        WHERE competences ILIKE '%Python%'
-        ORDER BY max_note_par_competence DESC;
+
 
         -----view poste par experience
         CREATE OR REPLACE VIEW CV_ParPoste AS
@@ -348,7 +342,7 @@ $$;
             EXTRACT(MONTH FROM AGE(MAX(e.fin), MIN(e.debut))) || ' mois' AS duree_experience
         FROM
             cv_complet cv
-                LEFT JOIN Experience e ON e.idpersonne = cv.idpersonne
+                LEFT JOIN Experience e ON e.idutilisateur = cv.idpersonne
         WHERE
             cv.dernier_poste IS NOT NULL
           AND e.poste = cv.dernier_poste
@@ -366,16 +360,8 @@ $$;
         FROM CV_ParPoste
         WHERE dernier_poste ILIKE '%%';
 
-        -----recherche par domaine
-        SELECT
-        *
-        FROM
-        CV_ParPoste cv
-        WHERE
-        cv.domaine_competence ILIKE '%Développement%'
-        ORDER BY
-        cv.max_note_par_competence DESC,
-        cv.duree_experience DESC;
+
+
 
 -------detail personne
             CREATE OR REPLACE VIEW details_personne AS
@@ -400,11 +386,11 @@ $$;
                     JOIN Utilisateur u ON p.idutilisateur = u.id
                     LEFT JOIN genre g ON p.idgenre = g.id
                     LEFT JOIN StatutMatrimonial sm ON p.idstatutmatrimonial = sm.id
-                    LEFT JOIN CV c ON p.id = c.idpersonne
-                    LEFT JOIN Competence comp ON p.id = comp.idpersonne
+                    LEFT JOIN CV c ON p.id = c.idutilisateur
+                    LEFT JOIN Competence comp ON p.id = comp.idutilisateur
                     LEFT JOIN Domaine d ON comp.iddomaine = d.id
                     LEFT JOIN niveaucompetence nc ON comp.idniveau = nc.id
-                    LEFT JOIN Experience e ON p.id = e.idpersonne
+                    LEFT JOIN Experience e ON p.id = e.idutilisateur
                     LEFT JOIN DiplomeObtention dpl ON c.iddiplome = dpl.id
                     LEFT JOIN Diplome di ON dpl.iddiplome = di.id
             GROUP BY
@@ -452,14 +438,14 @@ $$;
                 JOIN Utilisateur u ON p.idutilisateur = u.id
                 LEFT JOIN genre g ON p.idgenre = g.id
                 LEFT JOIN StatutMatrimonial sm ON p.idstatutmatrimonial = sm.id
-                LEFT JOIN CV c ON p.id = c.idpersonne
-                LEFT JOIN Competence comp ON p.id = comp.idpersonne
+                LEFT JOIN CV c ON p.id = c.idutilisateur
+                LEFT JOIN Competence comp ON p.id = comp.idutilisateur
                 LEFT JOIN Domaine d ON comp.iddomaine = d.id
                 LEFT JOIN niveaucompetence nc ON comp.idniveau = nc.id
-                LEFT JOIN Experience e ON p.id = e.idpersonne
+                LEFT JOIN Experience e ON p.id = e.idutilisateur
                 LEFT JOIN DiplomeObtention dpl ON c.iddiplome = dpl.id
                 LEFT JOIN Diplome di ON dpl.iddiplome = di.id
-                LEFT JOIN CVluangage cvl ON c.id = cvl.idcv
+                LEFT JOIN CVluangage cvl ON c.idutilisateur = cvl.idutilisateur
                 LEFT JOIN language l ON cvl.idlanguage = l.id
         GROUP BY
             p.id, u.nom, u.prenom, p.date_naissance, p.adresse, p.telephone, g.nom, sm.statut, u.email

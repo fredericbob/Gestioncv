@@ -1,5 +1,6 @@
 package com.example.gestioncvback.Models.Personne;
 
+import com.example.gestioncvback.Models.Users.Utilisateur;
 import jakarta.persistence.*;
 
 import java.sql.Date;
@@ -13,8 +14,8 @@ public class Experience {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "idpersonne")
-    private Personne personne;
+    @JoinColumn(name = "idutilisateur", referencedColumnName = "id")
+    private Utilisateur utilisateur;
 
 
     @Column(name = "poste")
@@ -32,12 +33,12 @@ public class Experience {
     @Column(name = "description",columnDefinition = "TEXT")
     private String description;
 
-    public Personne getPersonne() {
-        return personne;
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
     }
 
-    public void setPersonne(Personne personne) {
-        this.personne = personne;
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
     }
 
     public int getId() {

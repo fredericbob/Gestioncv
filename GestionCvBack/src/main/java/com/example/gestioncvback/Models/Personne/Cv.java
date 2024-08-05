@@ -1,5 +1,6 @@
 package com.example.gestioncvback.Models.Personne;
 
+import com.example.gestioncvback.Models.Users.Utilisateur;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -11,9 +12,17 @@ public class Cv {
     @Column(name = "id")
     private int id;
 
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
+    }
+
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
+    }
+
     @ManyToOne
-    @JoinColumn(name = "idpersonne",referencedColumnName = "id")
-    private Personne personne;
+    @JoinColumn(name = "idutilisateur",referencedColumnName = "id")
+    private Utilisateur utilisateur;
 
 
     @Column(name = "nomcv")
@@ -26,9 +35,7 @@ public class Cv {
     @JoinColumn(name = "iddiplome" ,referencedColumnName = "id")
     private Diplomeobtention diplomeobtention;
 
-    @ManyToOne
-    @JoinColumn(name = "iddomaine",referencedColumnName = "id")
-    private Domaine domaine;
+
 
 
     @Column(name = "autresinformations")
@@ -45,22 +52,8 @@ public class Cv {
         this.diplomeobtention = diplomeobtention;
     }
 
-    public Domaine getDomaine() {
-        return domaine;
-    }
-
-    public void setDomaine(Domaine domaine) {
-        this.domaine = domaine;
-    }
 
 
-    public Personne getPersonne() {
-        return personne;
-    }
-
-    public void setPersonne(Personne personne) {
-        this.personne = personne;
-    }
 
     public int getId() {
         return id;

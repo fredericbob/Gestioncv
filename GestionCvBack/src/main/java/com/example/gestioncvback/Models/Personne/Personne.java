@@ -69,7 +69,7 @@ public class Personne {
         this.statutmatrimonial = statutmatrimonial;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

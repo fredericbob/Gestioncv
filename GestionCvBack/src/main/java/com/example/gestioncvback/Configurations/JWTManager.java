@@ -32,6 +32,7 @@ public class JWTManager {
                 .setHeaderParam("typ", "JWT")
                 .setIssuedAt(currentDate)
                 .setExpiration(new Date(currentDate.getTime() + dayToMs(1)))
+                .claim("id", utilisateur.getId())
                 .claim("nom", utilisateur.getNom())
                 .claim("prenom", utilisateur.getPrenom())
                 .claim("email", utilisateur.getEmail())

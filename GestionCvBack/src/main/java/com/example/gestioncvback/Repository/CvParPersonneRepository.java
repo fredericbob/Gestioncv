@@ -19,12 +19,13 @@ public interface CvParPersonneRepository extends JpaRepository<CvParPersonne, In
     @Transactional
     @Modifying
     @Query(value = """
-   INSERT INTO CV_Archive (idpersonne, nomcv, typecv, iddiplome, iddomaine, autresinformations, date_archivage)
-   SELECT c.idpersonne, c.nomcv, c.typecv, c.iddiplome, c.iddomaine, c.autresinformations, CURRENT_TIMESTAMP
-   FROM CV c
-   WHERE c.id = :idcv
-   """, nativeQuery = true)
+INSERT INTO CV_Archive (idutiliasteur, nomcv, typecv, iddiplome, autresinformations, date_archivage)
+SELECT c.idutilisateur, c.nomcv, c.typecv, c.iddiplome, c.autresinformations, CURRENT_TIMESTAMP
+FROM CV c
+WHERE c.id = :idcv
+""", nativeQuery = true)
     void archiver(@Param("idcv") int idcv);
+
 
     @Transactional
     @Modifying
@@ -34,8 +35,8 @@ public interface CvParPersonneRepository extends JpaRepository<CvParPersonne, In
     @Transactional
     @Modifying
     @Query(value = """
-        INSERT INTO CV (idpersonne, nomcv, typecv, iddiplome, iddomaine, autresinformations, archive)
-        SELECT idpersonne, nomcv, typecv, iddiplome, iddomaine, autresinformations, false
+        INSERT INTO CV (idutilisateur, nomcv, typecv, iddiplome, autresinformations, archive)
+        SELECT idutilisateur, nomcv, typecv, iddiplome, autresinformations, false
         FROM cv_archive
         WHERE id = :idcv
         """, nativeQuery = true)
