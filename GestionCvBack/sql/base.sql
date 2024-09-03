@@ -210,6 +210,9 @@
         pourcentage double precision  not null
         );
 
+
+
+
         CREATE INDEX idx_cvluangage_idcv ON CVluangage(idutilisateur);
 
 

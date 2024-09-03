@@ -40,7 +40,6 @@ public class Cvluangage {
         this.language = language;
     }
 
-
     public int getId() {
         return id;
     }
@@ -48,10 +47,6 @@ public class Cvluangage {
     public void setId(int id) {
         this.id = id;
     }
-
-
-
-
 
     public double getPourcentage() {
         return pourcentage;

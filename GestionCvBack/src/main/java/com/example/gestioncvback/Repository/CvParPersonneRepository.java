@@ -36,7 +36,7 @@ WHERE c.id = :idcv
     @Modifying
     @Query(value = """
         INSERT INTO CV (idutilisateur, nomcv, typecv, iddiplome, autresinformations, archive)
-        SELECT idutilisateur, nomcv, typecv, iddiplome, autresinformations, false
+        SELECT idutiliasteur,nomcv,typecv, iddiplome, autresinformations, false
         FROM cv_archive
         WHERE id = :idcv
         """, nativeQuery = true)

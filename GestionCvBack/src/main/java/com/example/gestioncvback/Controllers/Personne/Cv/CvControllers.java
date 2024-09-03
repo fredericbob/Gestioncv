@@ -3,7 +3,9 @@ package com.example.gestioncvback.Controllers.Personne.Cv;
 import com.example.gestioncvback.Models.Personne.Cv;
 import com.example.gestioncvback.Models.Personne.Diplome;
 import com.example.gestioncvback.Models.Personne.Domaine;
+import com.example.gestioncvback.Models.Personne.Language;
 import com.example.gestioncvback.Services.Cv.CvServices;
+import com.example.gestioncvback.Services.Cv.CvlanguageService;
 import com.example.gestioncvback.Services.Cv.DiplomeService;
 import com.example.gestioncvback.Services.Cv.DomaineService;
 import com.example.gestioncvback.result.Result;
@@ -23,12 +25,15 @@ public class CvControllers {
     private final CvServices cvServices;
 
     private final DomaineService domaineService;
+
+    private final CvlanguageService cvlanguageService;
     private final DiplomeService diplomeService;
 
     @Autowired
-    public CvControllers(CvServices cvServices, DomaineService domaineService, DiplomeService diplomeService) {
+    public CvControllers(CvServices cvServices, DomaineService domaineService, CvlanguageService cvlanguageService, DiplomeService diplomeService) {
         this.cvServices = cvServices;
         this.domaineService = domaineService;
+        this.cvlanguageService = cvlanguageService;
         this.diplomeService = diplomeService;
     }
 
@@ -93,6 +98,16 @@ public class CvControllers {
         try {
             long count = cvServices.getTotalNouveauxCvAujourdHui();
             return new ResponseEntity<>(new Result("Ok", "", count), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Result("An Error Occured", e.getMessage(), ""), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/language")
+    public ResponseEntity<Result> Language() {
+        try {
+            List<Language> language = cvlanguageService.findAll();
+            return new ResponseEntity<>(new Result("Ok", "", language), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new Result("An Error Occured", e.getMessage(), ""), HttpStatus.BAD_REQUEST);
         }
